@@ -1,6 +1,7 @@
 # calculator
 
-TODO: Write a description here
+A calculator library written in crystal
+(Not the most efficient algorithm)
 
 ## Installation
 
@@ -19,6 +20,7 @@ TODO: Write a description here
 ```crystal
 require "calculator"
 ```
+puts Calculator.calculate("3pi(-2-1)")
 
 TODO: Write usage instructions here
 

@@ -4,7 +4,6 @@ module Calculator
         property symbol, priority, pos
         getter symbol, priority, pos
         def initialize(@symbol : Char, @priority : Int32, @pos : Int32)
-
         end
     end
 
@@ -81,14 +80,6 @@ module Calculator
         def length
             @string.size
         end
-
-        def print
-            puts "|" + @name + " " + @string + " " + @start.to_s + "|"
-            @func_parts.each do |p|
-                p.print
-            end
-        end
-
     end
 
     @@maxOperator = 3
@@ -98,8 +89,7 @@ module Calculator
 
     def self.calculate(input : String)
         input = self.transform input
-        puts input
-        functions = self.findFunctions input
+        functions = self.find_functions input
         function = self.function_children Function.new("", input, 0, 0), functions.keys.reverse, input
         function.build
         function.value
@@ -186,14 +176,14 @@ module Calculator
     end
 
 
-    def self.isNumber?(input : Char)
+    def self.is_number?(input : Char)
         @@numbers.includes?(input)
     end
 
 
     #   Finds functions; Returns the begin (inclusive), end (exclusive) and name as a Tuple 
     #   The corresponding value in the HashMap is the priority
-    def self.findFunctions(input)
+    def self.find_functions(input)
         functionsHash = Hash(Tuple(Int32, Int32, String), Int32).new
         bracketBonus = 0
 
@@ -206,7 +196,7 @@ module Calculator
                 while j > 0
                     j-=1
                     temp_c = input[j]
-                    if self.isOperator?(temp_c) != -1 || temp_c == '('
+                    if self.is_operator?(temp_c) != -1 || temp_c == '('
                         break
                     end
                 end
@@ -224,11 +214,6 @@ module Calculator
         functionsHash
     end
 
-    def self.find_functions(input)
-
-    end
-
-
     def self.find_operators(input : String)
         operatorHash = Hash(Int32, Int32).new
         bracketBonus = 0
@@ -238,8 +223,8 @@ module Calculator
             elsif char == ')'
                 bracketBonus -= @@maxOperator
             else
-                res = self.isOperator? char
-                if res > -1 && index > 0 && (char != '-' || self.isOperator?(input[index-1]) == -1)
+                res = self.is_operator? char
+                if res > -1 && index > 0 && (char != '-' || self.is_operator?(input[index-1]) == -1)
                     operatorHash[index] = res + bracketBonus
                 end# 0, 3
             end
@@ -260,13 +245,13 @@ module Calculator
         self.gsub(
             input.strip(),
             {
-                " " => "", "pi" => "π", "sqrt" => "2√", "root" => "√", "²" => "^2", "³" => "^3", "⁴" => "^4", "⁵" => "^5", "⁶" => "^6", "⁷" => "^7", "⁸" => "^8", "⁹" => "^9", "+-" => "-", "++" => "+", /(?<=\d|\))\(/ => "*(", /\)(?=\d|\()/ => ")*"
+                " " => "", "pi" => "π", "sqrt" => "2√", "root" => "√", "²" => "^2", "³" => "^3", "⁴" => "^4", "⁵" => "^5", "⁶" => "^6", "⁷" => "^7", "⁸" => "^8", "⁹" => "^9", "+-" => "-", "++" => "+", /(?<=\d|π|e|\))\(/ => "*(", /\)(?=\d|π|e|\()/ => ")*", /(?<=\d|\))π/ => "*π", /π(?=\d|\()/ => "π*", /(?<=\d|\))e/ => "*e", /e(?=\d|\()/ => "e*"
             }
         )
     end
 
 
-    def self.isOperator?(input : Char)
+    def self.is_operator?(input : Char)
         case input
             when '+', '-'
                 0
@@ -290,6 +275,3 @@ module Calculator
 
 
 end
-
-#puts Calculator.calculate("-1((1+((1)+1)))-1")
-puts Calculator.calculate("3(2)1(-1/2)")
